@@ -20,6 +20,7 @@ baserecords.pid as 'geodir_pid',
 baserecords.businessname as 'post_title',
 '1' as 'post_author',
 'gd_place' as 'post_type',
+group_concat(distinct concat_ws(',', replace(categories.categoryname,'&','&amp;'),replace(internettotheme.themename,'&','&amp;')) separator ',') as 'post_category',
 -- group_concat(distinct top_category separator ',') as 'post_category',   -- concat_ws(',', replace(categories.categoryname,'&','&amp;'),replace(internettotheme.themename,'&','&amp;')) separator ',') as 'post_category',
 chains.stdname as 'franchise',
 group_concat(distinct attr_group separator ',') as 'post_tags', -- concat_ws(',', group_concat(distinct companyattributes.attributename separator ','), group_concat(distinct companyattributes.groupname separator ',')) as 'post_tags',
@@ -61,7 +62,11 @@ from baserecords
 	left join (select companyattributes.pid, concat_ws(',', group_concat(distinct companyattributes.attributename separator ','), group_concat(distinct companyattributes.groupname separator ',')) as attr_group
 		from companyattributes group by companyattributes.pid) as b on baserecords.pid = b.pid
 
-	-- left join (select companyheadings.pid, group_concat(distict concat_ws(',', replace(categories.categoryname,'&','&amp;'),replace(internettotheme.themename,'&','&amp;')) separator ',') as top_category
+
+	left join (companyheadings, categories, internettotheme)
+		on (baserecords.pid = companyheadings.pid and categories.categoryid = companyheadings.categoryid and companyheadings.categoryid = internettotheme.internetid)
+
+			-- left join (select companyheadings.pid, group_concat(distict concat_ws(',', replace(categories.categoryname,'&','&amp;'),replace(internettotheme.themename,'&','&amp;')) separator ',') as top_category
 		-- from companyheadings
 			-- inner join categories on companyheadings.categoryid = categories.categoryid
 			-- inner join internettotheme on categories.categoryid = internettotheme.internetid
