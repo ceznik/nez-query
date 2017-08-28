@@ -5,10 +5,12 @@ var Nightmare = require('nightmare');
 //require('nightmare-upload')(Nightmare);
 //var nightmare = Nightmare();
 Nightmare.action('upload', function(done){
-	this.evaluate_now(function(){
-		var filePath = 'C:\ProgramData\MySQL\MySQL Server 5.7\Uploads\customquery_new_format_800.2-32001.csv';
-	})
-})
+	this.evaluate(function(){
+		var filePath = 'C:\\ProgramData\\MySQL\\MySQL Server 5.7\\Uploads\\customquery_new_format_800.2-32001.csv';
+		console.log(filePath +  " ready to be uploaded...");
+		return filePath;
+	}),done
+});
 //var Nightmare = require('nightmare');       
 var nightmare = Nightmare({openDevTools: {
     mode: 'detach',
@@ -65,8 +67,7 @@ app.get('/nezibo/import/', function(req, res){
 		//var catname = req.params.subcat.replace('%20',' ');
 		nightmare
 		.goto(url2new)
-		//.upload(import_button_id,)
-		.click('#filename')
+		.upload()
 		.then(function(result){
 			res.send("Page Found");
 			console.log("Made it to the page...");
@@ -76,4 +77,9 @@ app.get('/nezibo/import/', function(req, res){
 		})
 	});
 })
+
+app.use('/nezibo', function(req, res, next){
+	res.send('<h2>Nezibo File Upload</h2>');
+	next();
+});
 
